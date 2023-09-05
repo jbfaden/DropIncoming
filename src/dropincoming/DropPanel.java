@@ -10,7 +10,9 @@ import java.awt.dnd.DropTargetDragEvent;
 import java.awt.dnd.DropTargetDropEvent;
 import java.awt.dnd.DropTargetEvent;
 import java.awt.dnd.DropTargetListener;
+import java.io.ByteArrayInputStream;
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.util.List;
@@ -88,6 +90,21 @@ public final class DropPanel extends javax.swing.JPanel {
                         } catch (IOException ex) {
                             Logger.getLogger(DropPanel.class.getName()).log(Level.SEVERE, null, ex);
                         }
+                    } else if ( f.getMimeType().startsWith("application/x-moz-custom-clipdata" ) ) {
+                        dtde.acceptDrop( DnDConstants.ACTION_COPY );
+                        try {
+                            Object o = dtde.getTransferable().getTransferData(f);
+                            ByteArrayInputStream in= (ByteArrayInputStream)o;
+                            File ftmp= new File( "/tmp/dropPanel.dat" );
+                            Files.copy( in, ftmp.toPath() );
+                            currentFile= ftmp;
+                            currentFileLabel.setText( currentFile.toString() );
+                        } catch (UnsupportedFlavorException | IOException ex) {
+                            Logger.getLogger(DropPanel.class.getName()).log(Level.SEVERE, null, ex);
+                        }
+                        System.err.println("ignore "+f.getMimeType());
+                    } else {
+                        System.err.println("ignore "+f.getMimeType());
                     }
 //                    Object ins;
 //                    try {
