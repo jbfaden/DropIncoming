@@ -1,11 +1,6 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
+
 package dropincoming;
 
-import com.sun.org.apache.xalan.internal.xsltc.dom.CurrentNodeListFilter;
 import java.awt.Color;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.UnsupportedFlavorException;
@@ -27,7 +22,7 @@ import javax.swing.JFileChooser;
  *
  * @author jbf
  */
-public class DropPanel extends javax.swing.JPanel {
+public final class DropPanel extends javax.swing.JPanel {
 
     Color color0;
     File currentDirectory=null;
@@ -83,8 +78,9 @@ public class DropPanel extends javax.swing.JPanel {
                                         statusLabel.setText( "file copied to current");
                                     } else {
                                         statusLabel.setText( "file in temporary area");
+                                        currentFile= file;
                                     }
-                                    currentFileLabel.setText( file.toString() );
+                                    currentFileLabel.setText( currentFile.toString() );
                                 }
                             }
                         } catch (UnsupportedFlavorException ex) {
@@ -117,12 +113,13 @@ public class DropPanel extends javax.swing.JPanel {
 
         jButton1 = new javax.swing.JButton();
         currentFileLabel = new javax.swing.JLabel();
-        jButton2 = new javax.swing.JButton();
-        jButton3 = new javax.swing.JButton();
+        saveToButton = new javax.swing.JButton();
+        copyDirectoryButton = new javax.swing.JButton();
         currentDirectoryLabel = new javax.swing.JLabel();
         statusLabel = new javax.swing.JLabel();
 
         jButton1.setText("Copy");
+        jButton1.setToolTipText("Copy Filename to Clipboard");
         jButton1.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jButton1ActionPerformed(evt);
@@ -131,17 +128,18 @@ public class DropPanel extends javax.swing.JPanel {
 
         currentFileLabel.setText("(no current file)");
 
-        jButton2.setText("Save to...");
-        jButton2.addActionListener(new java.awt.event.ActionListener() {
+        saveToButton.setText("Save to...");
+        saveToButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton2ActionPerformed(evt);
+                saveToButtonActionPerformed(evt);
             }
         });
 
-        jButton3.setText("Copy Directory");
-        jButton3.addActionListener(new java.awt.event.ActionListener() {
+        copyDirectoryButton.setText("Copy Directory");
+        copyDirectoryButton.setToolTipText("Copy directory name to clipboard");
+        copyDirectoryButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton3ActionPerformed(evt);
+                copyDirectoryButtonActionPerformed(evt);
             }
         });
 
@@ -168,11 +166,11 @@ public class DropPanel extends javax.swing.JPanel {
                             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                                 .addComponent(statusLabel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(jButton2))
+                                .addComponent(saveToButton))
                             .addGroup(layout.createSequentialGroup()
                                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                                     .addComponent(jButton1)
-                                    .addComponent(jButton3))
+                                    .addComponent(copyDirectoryButton))
                                 .addGap(0, 0, Short.MAX_VALUE)))
                         .addContainerGap())))
         );
@@ -184,12 +182,12 @@ public class DropPanel extends javax.swing.JPanel {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(currentFileLabel)
                 .addGap(4, 4, 4)
-                .addComponent(jButton3)
+                .addComponent(copyDirectoryButton)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(currentDirectoryLabel)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 336, Short.MAX_VALUE)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addComponent(jButton2)
+                    .addComponent(saveToButton)
                     .addGroup(layout.createSequentialGroup()
                         .addGap(5, 5, 5)
                         .addComponent(statusLabel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
@@ -197,7 +195,7 @@ public class DropPanel extends javax.swing.JPanel {
         );
     }// </editor-fold>//GEN-END:initComponents
 
-    private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
+    private void saveToButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_saveToButtonActionPerformed
         JFileChooser chooser= new JFileChooser();
         chooser.setMultiSelectionEnabled(false);
         chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
@@ -213,9 +211,11 @@ public class DropPanel extends javax.swing.JPanel {
             if ( currentFile!=null ) {
                 File currentFileT= new File( currentDirectory, currentFile.getName() );
                 try {   
-                    Files.copy( currentFileT.toPath(), currentFile.toPath() );
+                    Files.copy( currentFile.toPath(), currentFileT.toPath() );
                     statusLabel.setText( "file copied to current");
                     currentFileLabel.setText( currentFile.toString() );
+                    currentFile= currentFileT;
+                    currentFileLabel.setText(currentFile.toString());
                 } catch (IOException ex) {
                     statusLabel.setText(ex.getMessage());
                 }
@@ -224,7 +224,7 @@ public class DropPanel extends javax.swing.JPanel {
             }
             currentDirectoryLabel.setText(currentDirectory.toString());
         }
-    }//GEN-LAST:event_jButton2ActionPerformed
+    }//GEN-LAST:event_saveToButtonActionPerformed
 
     /**
      * copy the string to the system clipboard.
@@ -235,9 +235,9 @@ public class DropPanel extends javax.swing.JPanel {
             .setContents(new java.awt.datatransfer.StringSelection(text), null);
     }
     
-    private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
+    private void copyDirectoryButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_copyDirectoryButtonActionPerformed
         copyToClipBoard( currentDirectory.toString() );
-    }//GEN-LAST:event_jButton3ActionPerformed
+    }//GEN-LAST:event_copyDirectoryButtonActionPerformed
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
         copyToClipBoard( currentFileLabel.getText() );
@@ -245,11 +245,11 @@ public class DropPanel extends javax.swing.JPanel {
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton copyDirectoryButton;
     private javax.swing.JLabel currentDirectoryLabel;
     private javax.swing.JLabel currentFileLabel;
     private javax.swing.JButton jButton1;
-    private javax.swing.JButton jButton2;
-    private javax.swing.JButton jButton3;
+    private javax.swing.JButton saveToButton;
     private javax.swing.JLabel statusLabel;
     // End of variables declaration//GEN-END:variables
 }
