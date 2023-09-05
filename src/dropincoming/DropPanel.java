@@ -19,6 +19,7 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JFileChooser;
+import javax.swing.JOptionPane;
 
 /**
  *
@@ -74,10 +75,24 @@ public final class DropPanel extends javax.swing.JPanel {
                                 if ( l.size()>0 ) {
                                     File file= l.get(0);
                                     if ( currentDirectory!=null ) {
-                                        currentFile= new File( currentDirectory, file.getName() );
-                                        Files.copy( file.toPath(), currentFile.toPath() );   
-                                        file= currentFile;
-                                        statusLabel.setText( "file copied to current");
+                                        int opt= JOptionPane.showInternalConfirmDialog( DropPanel.this, 
+                                            "drop into "+currentDirectory + "?",
+                                            "Drop here", 
+                                            JOptionPane.YES_NO_CANCEL_OPTION );
+                                        if ( JOptionPane.OK_OPTION==opt ) {
+                                            currentFile= new File( currentDirectory, file.getName() );
+                                            Files.copy( file.toPath(), currentFile.toPath() );   
+                                            file= currentFile;   
+                                            statusLabel.setText( "file copied to current");
+                                        } else if ( JOptionPane.NO_OPTION==opt ) {
+                                            currentDirectory=null;
+                                            currentDirectoryLabel.setText("");
+                                            statusLabel.setText( "file in temporary area");
+                                            currentFile= file;
+                                        } else {
+                                            statusLabel.setText( "cancelled");
+                                        }
+                                        
                                     } else {
                                         statusLabel.setText( "file in temporary area");
                                         currentFile= file;
