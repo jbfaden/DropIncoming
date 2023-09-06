@@ -1,7 +1,11 @@
 
 package dropincoming;
 
+import java.awt.BasicStroke;
 import java.awt.Color;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.Stroke;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.UnsupportedFlavorException;
 import java.awt.dnd.DnDConstants;
@@ -33,6 +37,7 @@ public final class DropPanel extends javax.swing.JPanel {
     File currentDirectory=null;
     File currentFile=null;
     String pathDelim;
+    boolean dropActive=false;
     
     /**
      * Creates new form DropPanel
@@ -44,11 +49,28 @@ public final class DropPanel extends javax.swing.JPanel {
         pathDelim= FileSystems.getDefault().getSeparator();
     }
 
+    @Override
+    protected void paintComponent(Graphics g1) {
+        super.paintComponent(g1);
+        if ( dropActive ) {
+            Graphics2D g= (Graphics2D)g1;
+            Stroke stroke0= g.getStroke();
+            Color color0= g.getColor();
+            g.setColor( new Color(128,128,128) );
+            g.setStroke( new BasicStroke(10f, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND, 0, new float[]{60, 20}, 0) );
+            g.drawRoundRect( 30, 30, getWidth()-60, getHeight()-60, 30, 30 );
+            g.setStroke(stroke0);
+            g.setColor(color0);
+        }
+    }
+
+    
     void addDropTarget() {
         DropTargetListener listener= new DropTargetListener() {
             @Override
             public void dragEnter(DropTargetDragEvent dtde) {
-                DropPanel.this.setBackground( Color.blue.brighter().brighter() );
+                DropPanel.this.dropActive= true;
+                repaint();
             }
 
             @Override
@@ -63,11 +85,13 @@ public final class DropPanel extends javax.swing.JPanel {
 
             @Override
             public void dragExit(DropTargetEvent dte) {
-                DropPanel.this.setBackground( DropPanel.this.color0 );
+                DropPanel.this.dropActive= false;
+                repaint();
             }
 
             @Override
             public void drop(DropTargetDropEvent dtde) {
+                DropPanel.this.dropActive= false;
                 DataFlavor[] ff= dtde.getCurrentDataFlavors();
                 for ( DataFlavor f : ff ) {
                     if ( f.getMimeType().startsWith("application/x-java-file-list" ) ) {
@@ -126,7 +150,8 @@ public final class DropPanel extends javax.swing.JPanel {
 //                        Logger.getLogger(DropPanel.class.getName()).log(Level.SEVERE, null, ex);
 //                    }
                 }
-                DropPanel.this.setBackground( DropPanel.this.color0 );
+                DropPanel.this.repaint();
+                
             }
 
 
