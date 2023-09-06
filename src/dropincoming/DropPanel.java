@@ -14,6 +14,8 @@ import java.awt.dnd.DropTargetDragEvent;
 import java.awt.dnd.DropTargetDropEvent;
 import java.awt.dnd.DropTargetEvent;
 import java.awt.dnd.DropTargetListener;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
@@ -275,6 +277,20 @@ public final class DropPanel extends javax.swing.JPanel {
         JFileChooser chooser= new JFileChooser();
         chooser.setMultiSelectionEnabled(false);
         chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+        final ShortCutsPanel p= new ShortCutsPanel();
+        chooser.setAccessory( p );
+        p.addActionListener( new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                File f= chooser.getCurrentDirectory();
+                try {
+                    chooser.setCurrentDirectory( p.doAction( e.getActionCommand(), f ) );
+                } catch (IOException ex) {
+                    System.err.println(ex.getMessage());
+                }
+            }
+        });
+        
         if ( currentFile!=null ) {
             chooser.setCurrentDirectory( currentFile.getParentFile() );
         }
