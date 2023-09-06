@@ -1,8 +1,4 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
+
 package dropincoming;
 
 import java.awt.event.ActionEvent;
@@ -13,16 +9,14 @@ import java.nio.file.FileSystems;
 import java.time.LocalDate;
 
 /**
- *
+ * provide a list of shortcut buttons that jump to oft-used locations and makes a directory with $Y$m$d for the name.
+ * TODO: this will be refactored to allow any custom buttons to be added without recompile.
  * @author jbf
  */
 public class ShortCutsPanel extends javax.swing.JPanel {
 
     ActionListener a;
-    
-    /**
-     * Creates new form ShortCutsPanel
-     */
+
     public ShortCutsPanel() {
         initComponents();
     }
