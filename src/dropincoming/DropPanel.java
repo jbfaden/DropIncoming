@@ -12,17 +12,19 @@ import java.awt.dnd.DropTargetEvent;
 import java.awt.dnd.DropTargetListener;
 import java.io.ByteArrayInputStream;
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
+import java.nio.file.FileSystems;
 import java.nio.file.Files;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
+import javax.swing.SwingUtilities;
 
 /**
- *
+ * DropPanel is a JPanel component which allows file references to be 
+ * dropped on it.
  * @author jbf
  */
 public final class DropPanel extends javax.swing.JPanel {
@@ -30,6 +32,7 @@ public final class DropPanel extends javax.swing.JPanel {
     Color color0;
     File currentDirectory=null;
     File currentFile=null;
+    String pathDelim;
     
     /**
      * Creates new form DropPanel
@@ -38,6 +41,7 @@ public final class DropPanel extends javax.swing.JPanel {
         initComponents();
         addDropTarget();
         color0= this.getBackground();
+        pathDelim= FileSystems.getDefault().getSeparator();
     }
 
     void addDropTarget() {
@@ -73,25 +77,18 @@ public final class DropPanel extends javax.swing.JPanel {
                             if ( o instanceof java.util.List ) {
                                 List<File> l= (List<File>)o;
                                 if ( l.size()>0 ) {
-                                    File file= l.get(0);
+                                    final File file= l.get(0);
                                     if ( currentDirectory!=null ) {
-                                        int opt= JOptionPane.showInternalConfirmDialog( DropPanel.this, 
-                                            "drop into "+currentDirectory + "?",
-                                            "Drop here", 
-                                            JOptionPane.YES_NO_CANCEL_OPTION );
-                                        if ( JOptionPane.OK_OPTION==opt ) {
-                                            currentFile= new File( currentDirectory, file.getName() );
-                                            Files.copy( file.toPath(), currentFile.toPath() );   
-                                            file= currentFile;   
-                                            statusLabel.setText( "file copied to current");
-                                        } else if ( JOptionPane.NO_OPTION==opt ) {
-                                            currentDirectory=null;
-                                            currentDirectoryLabel.setText("");
-                                            statusLabel.setText( "file in temporary area");
-                                            currentFile= file;
-                                        } else {
-                                            statusLabel.setText( "cancelled");
-                                        }
+                                        Runnable run= new Runnable() {
+                                            public void run() {
+                                                try {
+                                                    dropWithCurrentDirectory(file);
+                                                } catch (IOException ex) {
+                                                    Logger.getLogger(DropPanel.class.getName()).log(Level.SEVERE, null, ex);
+                                                }
+                                            }
+                                        };
+                                        SwingUtilities.invokeLater(run);
                                         
                                     } else {
                                         statusLabel.setText( "file in temporary area");
@@ -131,10 +128,32 @@ public final class DropPanel extends javax.swing.JPanel {
                 }
                 DropPanel.this.setBackground( DropPanel.this.color0 );
             }
+
+
         };
         new DropTarget(this,DnDConstants.ACTION_COPY,listener,true);
     }
     
+        public void dropWithCurrentDirectory(File file) throws IOException {
+            int opt= JOptionPane.showInternalConfirmDialog( DropPanel.this,
+                    "drop into "+currentDirectory + "?",
+                    "Drop here",
+                    JOptionPane.YES_NO_CANCEL_OPTION );
+            if ( JOptionPane.OK_OPTION==opt ) {
+                currentFile= new File( currentDirectory, file.getName() );
+                Files.copy( file.toPath(), currentFile.toPath() );
+                file= currentFile;
+                statusLabel.setText( "file copied to current");
+            } else if ( JOptionPane.NO_OPTION==opt ) {
+                currentDirectory=null;
+                currentDirectoryLabel.setText("");
+                statusLabel.setText( "file in temporary area");
+                currentFile= file;
+            } else {
+                statusLabel.setText( "cancelled");
+            }
+        }
+            
     /**
      * This method is called from within the constructor to initialize the form. WARNING: Do NOT modify this code. The content of
      * this method is always regenerated by the Form Editor.
@@ -268,7 +287,7 @@ public final class DropPanel extends javax.swing.JPanel {
     }
     
     private void copyDirectoryButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_copyDirectoryButtonActionPerformed
-        copyToClipBoard( currentDirectory.toString() );
+        copyToClipBoard( currentDirectory.toString()+pathDelim );
     }//GEN-LAST:event_copyDirectoryButtonActionPerformed
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
