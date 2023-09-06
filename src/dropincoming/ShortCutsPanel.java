@@ -39,6 +39,12 @@ public class ShortCutsPanel extends javax.swing.JPanel {
             if ( !newDir.mkdir() ) {
                 throw new IOException("unable to mkdir");
             }
+        } else if ( label.equals("tmp") ) {
+            String sep=FileSystems.getDefault().getSeparator();
+            newDir = new File( System.getProperty("user.home") + sep + "tmp" );
+        } else if ( label.equals("ctTmp") ) {
+            String sep=FileSystems.getDefault().getSeparator();
+            newDir = new File( System.getProperty("user.home") + sep + "ct" + sep + "tmp" );
         } else if ( label.equals("toJunoU") ) {
             String sep=FileSystems.getDefault().getSeparator();
             newDir = new File( System.getProperty("user.home") + sep + "project" + sep + "juno" + sep + "u" );
@@ -62,6 +68,8 @@ public class ShortCutsPanel extends javax.swing.JPanel {
         jButton1 = new javax.swing.JButton();
         jButton2 = new javax.swing.JButton();
         jButton3 = new javax.swing.JButton();
+        jButton4 = new javax.swing.JButton();
+        jButton5 = new javax.swing.JButton();
 
         jButton1.setText("$Y$m$d");
         jButton1.addActionListener(new java.awt.event.ActionListener() {
@@ -84,6 +92,20 @@ public class ShortCutsPanel extends javax.swing.JPanel {
             }
         });
 
+        jButton4.setText("tmp");
+        jButton4.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton4ActionPerformed(evt);
+            }
+        });
+
+        jButton5.setText("ct tmp");
+        jButton5.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton5ActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
         layout.setHorizontalGroup(
@@ -93,16 +115,22 @@ public class ShortCutsPanel extends javax.swing.JPanel {
             .addGroup(layout.createSequentialGroup()
                 .addComponent(jButton3)
                 .addGap(0, 0, Short.MAX_VALUE))
+            .addComponent(jButton4, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addComponent(jButton5, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addComponent(jButton1)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jButton4)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jButton5)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jButton2)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jButton3)
-                .addGap(0, 213, Short.MAX_VALUE))
+                .addGap(0, 151, Short.MAX_VALUE))
         );
     }// </editor-fold>//GEN-END:initComponents
 
@@ -118,10 +146,20 @@ public class ShortCutsPanel extends javax.swing.JPanel {
         a.actionPerformed( new ActionEvent( this, 3, "toAutoplotU"));
     }//GEN-LAST:event_jButton3ActionPerformed
 
+    private void jButton4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton4ActionPerformed
+        a.actionPerformed( new ActionEvent( this, 4, "tmp"));
+    }//GEN-LAST:event_jButton4ActionPerformed
+
+    private void jButton5ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton5ActionPerformed
+        a.actionPerformed( new ActionEvent( this, 5, "ctTmp"));
+    }//GEN-LAST:event_jButton5ActionPerformed
+
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton jButton1;
     private javax.swing.JButton jButton2;
     private javax.swing.JButton jButton3;
+    private javax.swing.JButton jButton4;
+    private javax.swing.JButton jButton5;
     // End of variables declaration//GEN-END:variables
 }
