@@ -119,8 +119,9 @@ public class DropPanelFrame extends javax.swing.JFrame {
         String background= map.getOrDefault( "background", "" );
         if ( background.length()>0 ) {
             dropPanel1.setBackground( Color.decode(background) );
-            dropPanel1.setStatus( "setting background to "+background, 3000 );
         }
+        
+        dropPanel1.setStatus( "read config file "+config, 3000 );
         
     }
 }
