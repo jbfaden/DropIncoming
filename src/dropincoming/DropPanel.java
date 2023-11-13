@@ -177,7 +177,7 @@ public final class DropPanel extends javax.swing.JPanel {
     public static final String MSG_NO_CURRENT_DIRECTORY = "(no current directory)";
     
         public void dropWithCurrentDirectory(File file) throws IOException {
-            int opt= JOptionPane.showInternalConfirmDialog( DropPanel.this,
+            int opt= JOptionPane.showConfirmDialog( DropPanel.this,
                     "drop into "+currentDirectory + "?",
                     "Drop here",
                     JOptionPane.YES_NO_CANCEL_OPTION );
