@@ -118,14 +118,27 @@ public final class DropPanel extends javax.swing.JPanel {
                                         
                                     } else {
                                         statusLabel.setText( "file in temporary area");
-                                        currentFile= file;
+                                        if ( file.isDirectory() ) {
+                                            currentDirectory= file;
+                                            currentFile=null;
+                                        } else {
+                                            currentFile= file;
+                                        }
                                     }
-                                    currentFileLabel.setText( currentFile.toString() );
+                                    if ( currentFile==null ) {
+                                        currentFileLabel.setText(MSG_NO_CURRENT_FILE);
+                                    } else {
+                                        currentFileLabel.setText( currentFile.toString() );
+                                    }
+                                    if ( currentDirectory==null ) {
+                                        currentDirectoryLabel.setText(MSG_NO_CURRENT_DIRECTORY);
+                                    } else {
+                                        currentDirectoryLabel.setText( currentDirectory.toString() );
+                                    }
+                                    
                                 }
                             }
-                        } catch (UnsupportedFlavorException ex) {
-                            Logger.getLogger(DropPanel.class.getName()).log(Level.SEVERE, null, ex);
-                        } catch (IOException ex) {
+                        } catch (UnsupportedFlavorException | IOException ex) {
                             Logger.getLogger(DropPanel.class.getName()).log(Level.SEVERE, null, ex);
                         }
                     } else if ( f.getMimeType().startsWith("application/x-moz-custom-clipdata" ) ) {
@@ -160,6 +173,8 @@ public final class DropPanel extends javax.swing.JPanel {
         };
         new DropTarget(this,DnDConstants.ACTION_COPY,listener,true);
     }
+    public static final String MSG_NO_CURRENT_FILE = "(no current file)";
+    public static final String MSG_NO_CURRENT_DIRECTORY = "(no current directory)";
     
         public void dropWithCurrentDirectory(File file) throws IOException {
             int opt= JOptionPane.showInternalConfirmDialog( DropPanel.this,

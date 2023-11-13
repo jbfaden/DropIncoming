@@ -1,11 +1,8 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
+
 package dropincoming;
 
-import javax.swing.JOptionPane;
+import java.io.File;
+import java.io.IOException;
 
 /**
  *
@@ -13,11 +10,30 @@ import javax.swing.JOptionPane;
  */
 public class DropIncoming {
 
+    
     /**
      * @param args the command line arguments
      */
-    public static void main(String[] args) {
-        new DropPanelFrame().setVisible(true);
+    public static void main(String[] args) throws IOException {
+        DropPanelFrame app= new DropPanelFrame();
+        if ( args.length==1 ) {
+            if ( args[0].equals("--help") ) {
+                printHelp();
+                System.exit(1);
+            } else {
+                File config= new File( args[0] );
+                app.loadConfig(config);
+            }
+        } else if ( args.length>1 ) {
+            printHelp();
+            System.exit(1);
+        }
+        app.setVisible(true);
+    }
+
+    public static void printHelp() {
+        System.err.println("DropIncoming [config.dropj]");
+        System.err.println("   config.dropj - config file containing preferred locations.  These will be name-value pairs only containing background");
     }
     
 }

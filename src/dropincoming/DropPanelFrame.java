@@ -1,10 +1,12 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
+
 package dropincoming;
 
+import java.awt.Color;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
+import java.util.LinkedHashMap;
 import javax.swing.ImageIcon;
 
 /**
@@ -96,4 +98,28 @@ public class DropPanelFrame extends javax.swing.JFrame {
     private javax.swing.JLabel brandingLabel;
     private dropincoming.DropPanel dropPanel1;
     // End of variables declaration//GEN-END:variables
+
+
+    void loadConfig(File config) throws IOException {
+
+        LinkedHashMap<String,String> map= new LinkedHashMap<>();
+        
+        try ( BufferedReader bfr = new BufferedReader(new FileReader(config)) ) {
+
+
+            String line;
+            while ((line = bfr.readLine()) != null) {
+                if (!line.startsWith("#") && !line.isEmpty()) {
+                    String[] pair = line.trim().split("=",2);
+                    map.put(pair[0].trim(), pair[1].trim());
+                }
+            }
+        }
+        
+        String background= map.getOrDefault( "background", "" );
+        if ( background.length()>0 ) {
+            dropPanel1.setBackground( Color.decode(background) );
+        }
+        
+    }
 }
