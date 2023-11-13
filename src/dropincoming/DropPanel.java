@@ -27,6 +27,7 @@ import java.util.logging.Logger;
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
+import javax.swing.Timer;
 
 /**
  * DropPanel is a JPanel component which allows file references to be 
@@ -340,6 +341,21 @@ public final class DropPanel extends javax.swing.JPanel {
     private void copyToClipBoard( String text ) {
         java.awt.Toolkit.getDefaultToolkit().getSystemClipboard()
             .setContents(new java.awt.datatransfer.StringSelection(text), null);
+    }
+    
+    /**
+     * show the message for the given number of milliseconds
+     * @param message the message
+     * @param timeout the timeout in milliseconds
+     */
+    public void setStatus( String message, int timeout ) {
+        final String message0= statusLabel.getText();
+        statusLabel.setText(message);
+        Timer t= new Timer(timeout, (ActionEvent e) -> {
+            statusLabel.setText(message0);
+        });
+        t.setRepeats(false);
+        t.start();
     }
     
     private void copyDirectoryButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_copyDirectoryButtonActionPerformed
