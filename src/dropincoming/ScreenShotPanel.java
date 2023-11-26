@@ -1,8 +1,4 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
+
 package dropincoming;
 
 import java.awt.AWTException;
@@ -17,15 +13,15 @@ import java.io.File;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import java.util.TimeZone;
+import java.util.prefs.Preferences;
 import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
 import javax.swing.JFileChooser;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
 /**
- *
+ * provide idead panel for taking screenshots.
  * @author jbf
  */
 public class ScreenShotPanel extends javax.swing.JPanel {
@@ -33,6 +29,9 @@ public class ScreenShotPanel extends javax.swing.JPanel {
     BufferedImage screenShot;
     int oldh= -1;
     int oldw= -1;
+    public static String PREF_SCREENSHOT_FILENAME_TEMPLATE= "screenshotFilenameTemplate";
+    public static String PREF_SCREENSHOT_DIRECTORY="screenshotDirectory";
+    
 
     /**
      * Creates new form ScreenShotPanel
@@ -50,6 +49,25 @@ public class ScreenShotPanel extends javax.swing.JPanel {
         super.paintComponent(g); //To change body of generated methods, choose Tools | Templates.
     }
 
+    /**
+     * convert URI_Template strings like $Y$m$d to String.format templates
+     * like %1$tY%1$tm%1$td.
+     * @param uriTemplate
+     * @return 
+     */
+    private static String toJavaStringFormat( String uriTemplate ) {
+        String[] ss= uriTemplate.split("\\$");
+        StringBuilder b= new StringBuilder();
+        b.append(ss[0]);
+        for ( int i=1; i<ss.length; i++ ) {
+            b.append("%1$t").append(ss[i]);
+        }
+        return b.toString();
+    }
+    
+    private Preferences getPreferences() {
+        return Preferences.userNodeForPackage( ScreenShotPanel.class );
+    }
     
     public void takeScreenshot() {
         try {
@@ -63,16 +81,21 @@ public class ScreenShotPanel extends javax.swing.JPanel {
             Rectangle rect = new Rectangle(x, y, width, height);
             screenShot = robot.createScreenCapture(rect);
 
-            // Get the current date and time
-            Calendar calendar = Calendar.getInstance();
-
-            // Create a SimpleDateFormat object to format the date and time
-            SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd_HHmmss");
-
-            // Generate the file name
-            String fileName = "/tmp/dropPanel/" + sdf.format(calendar.getTime()) + ".png";
-
-            filenameLabel.setText(fileName);
+            Preferences prefs= getPreferences();
+            
+            String dir=  prefs.get( PREF_SCREENSHOT_DIRECTORY, System.getProperty("user.dir") );
+            
+            String template= prefs.get( PREF_SCREENSHOT_FILENAME_TEMPLATE, "$Y$m$d_$H$M$S.png" );
+            String jtemplate= toJavaStringFormat( template );
+            
+            TimeZone timeZone = TimeZone.getTimeZone("GMT");
+            Calendar calendar = Calendar.getInstance(timeZone);
+            
+            String fileName = String.format( jtemplate, calendar );
+            
+            File outf= new File(dir,fileName);
+            
+            filenameLabel.setText( outf.toString() );
             
             updateImage();
             
@@ -104,10 +127,15 @@ public class ScreenShotPanel extends javax.swing.JPanel {
     
     public void writeScreenshot() throws IOException {
         String fileName = filenameLabel.getText();
-
+        File file= new File(fileName);
+        
+        String directory= file.getParent();
+        
+        getPreferences().put( PREF_SCREENSHOT_DIRECTORY, directory );
+        
         // Print the file name
         System.out.println("File name: " + fileName);
-        ImageIO.write(screenShot, "png", new File(fileName));
+        ImageIO.write(screenShot, "png", file );
 
     }
 
@@ -161,11 +189,18 @@ public class ScreenShotPanel extends javax.swing.JPanel {
     }// </editor-fold>//GEN-END:initComponents
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
-        JFileChooser chooser= new JFileChooser( new File(filenameLabel.getText()) );
+        File oldFile= new File(filenameLabel.getText());
+        JFileChooser chooser= new JFileChooser( oldFile );
+        chooser.setFileSelectionMode( JFileChooser.FILES_AND_DIRECTORIES );
         chooser.setFileFilter( new FileNameExtensionFilter("png files", "png", "PNG") );
         int o= chooser.showSaveDialog(this);
         if ( o==JFileChooser.APPROVE_OPTION ) {
-            filenameLabel.setText( chooser.getSelectedFile().toString() );
+            if ( chooser.getSelectedFile().isDirectory() ) {
+                filenameLabel.setText( new File( chooser.getSelectedFile(), oldFile.getName() ).toString() );
+            } else {
+                filenameLabel.setText( chooser.getSelectedFile().toString() );
+            }
+            getPreferences().put( PREF_SCREENSHOT_DIRECTORY, new File(filenameLabel.getText()).getParent() );
         }
     }//GEN-LAST:event_jButton1ActionPerformed
 
