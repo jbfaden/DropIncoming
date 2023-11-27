@@ -1,9 +1,6 @@
 
 package dropincoming;
 
-import com.sun.glass.ui.Window;
-import com.sun.jna.platform.DesktopWindow;
-import com.sun.jna.platform.WindowUtils;
 import java.awt.AWTException;
 import java.awt.Dimension;
 import java.awt.Graphics;
@@ -14,9 +11,7 @@ import java.awt.Toolkit;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
-import java.text.SimpleDateFormat;
 import java.util.Calendar;
-import java.util.List;
 import java.util.TimeZone;
 import java.util.prefs.Preferences;
 import javax.imageio.ImageIO;
