@@ -226,6 +226,24 @@ public class ScreenShotPanel extends javax.swing.JPanel {
         System.err.println("rect: "+ r);
     }//GEN-LAST:event_imageLabelMouseClicked
 
+    /**
+     * This routine will identify the topmost window at this location.  I think
+     * the best way to do this will be to spawn a command which will return
+     * data in a known formats.  For example, this looks promising on Linux:
+     * ~/temp/autoplot/das2java
+     * spot9> xdotool search --all --name '.*' | xdotool getactivewindow getwindowgeometry
+     * Window 115343366
+     * Position: 1962,567 (screen: 0)
+     * Geometry: 1606x455
+     * 
+     * or
+     * 
+     * xdotool mousemove 1001 0 getactivewindow getwindowgeometry --shell mousemove restore
+
+     * @param i the horizontal pixel location on the image (left is 0)
+     * @param j the vertical pixel location on the image (top is 0)
+     * @return 
+     */
     public Rectangle getWindowAt( int i, int j ) {
         try {
             //List<DesktopWindow> ss= WindowUtils.getAllWindows(true);
