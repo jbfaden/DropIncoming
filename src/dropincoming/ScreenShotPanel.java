@@ -1,6 +1,9 @@
 
 package dropincoming;
 
+import com.sun.glass.ui.Window;
+import com.sun.jna.platform.DesktopWindow;
+import com.sun.jna.platform.WindowUtils;
 import java.awt.AWTException;
 import java.awt.Dimension;
 import java.awt.Graphics;
@@ -13,6 +16,7 @@ import java.io.File;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.List;
 import java.util.TimeZone;
 import java.util.prefs.Preferences;
 import javax.imageio.ImageIO;
@@ -29,6 +33,8 @@ public class ScreenShotPanel extends javax.swing.JPanel {
     BufferedImage screenShot;
     int oldh= -1;
     int oldw= -1;
+    double scale=1;
+    
     public static String PREF_SCREENSHOT_FILENAME_TEMPLATE= "screenshotFilenameTemplate";
     public static String PREF_SCREENSHOT_DIRECTORY="screenshotDirectory";
     
@@ -120,6 +126,7 @@ public class ScreenShotPanel extends javax.swing.JPanel {
         } else if ( w>h*aspect ) {
             h= (int)(w/aspect);
         }
+        scale= screenShot.getWidth() / w;
         Image im= screenShot.getScaledInstance( w, h, Image.SCALE_AREA_AVERAGING );
         imageLabel.setIcon( new ImageIcon( im ));
         
@@ -158,6 +165,12 @@ public class ScreenShotPanel extends javax.swing.JPanel {
         jButton1.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jButton1ActionPerformed(evt);
+            }
+        });
+
+        imageLabel.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                imageLabelMouseClicked(evt);
             }
         });
 
@@ -204,6 +217,27 @@ public class ScreenShotPanel extends javax.swing.JPanel {
         }
     }//GEN-LAST:event_jButton1ActionPerformed
 
+    private void imageLabelMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_imageLabelMouseClicked
+        int x= (int)(evt.getX()*scale);
+        int y= (int)(evt.getY()*scale);
+        System.err.println( String.format( "%d %d ", x, y ) );
+        Rectangle r= getWindowAt( x,y );
+        //Rectangle r= null; // WindowUtils doesn't seem to work.
+        System.err.println("rect: "+ r);
+    }//GEN-LAST:event_imageLabelMouseClicked
+
+    public Rectangle getWindowAt( int i, int j ) {
+        try {
+            List<DesktopWindow> ss= WindowUtils.getAllWindows(true);
+            for ( DesktopWindow s: ss ) {
+                System.err.println( String.format( "%s %s", s.getLocAndSize().toString(), s.getTitle() ) );
+            }
+            return null;
+        } catch ( Exception e ) {
+            System.err.println( "unable to find window.");
+            return null;
+        }
+    }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JLabel filenameLabel;
