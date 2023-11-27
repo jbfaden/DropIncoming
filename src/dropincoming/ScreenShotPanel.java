@@ -228,10 +228,10 @@ public class ScreenShotPanel extends javax.swing.JPanel {
 
     public Rectangle getWindowAt( int i, int j ) {
         try {
-            List<DesktopWindow> ss= WindowUtils.getAllWindows(true);
-            for ( DesktopWindow s: ss ) {
-                System.err.println( String.format( "%s %s", s.getLocAndSize().toString(), s.getTitle() ) );
-            }
+            //List<DesktopWindow> ss= WindowUtils.getAllWindows(true);
+            //for ( DesktopWindow s: ss ) {
+            //    System.err.println( String.format( "%s %s", s.getLocAndSize().toString(), s.getTitle() ) );
+            //}
             return null;
         } catch ( Exception e ) {
             System.err.println( "unable to find window.");
